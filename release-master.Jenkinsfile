@@ -107,13 +107,13 @@ pipeline {
       steps{
         script{
           withCredentials([
-            usernamePassword(credentialsId:'GitHub-Bot', passwordVariable:'BOT_PASSWORD', usernameVariable:'BOT_USERNAME'),
+            usernamePassword(credentialsId:'GitHub_Bot', passwordVariable:'BOT_PASSWORD', usernameVariable:'BOT_USERNAME'),
             usernamePassword(credentialsId:'OSS-Nexus-Bot', passwordVariable:'OSS_BOT_PASSWORD', usernameVariable:'OSS_BOT_USERNAME'),
             string(credentialsId: 'gnupg_passphrase', variable: 'PASSPHRASE')
           ]) {
             dir('indy'){
               env.INDY_PMD_VIOLATION = sh (
-                  script: 'mvn -B -s ../settings.xml -Pformatting clean install',
+                  script: 'mvn -B -s ../settings.xml -Pformatting,cq install -Dpmd.skip=true',
                   returnStatus: true
               ) == 0
               sh """
@@ -142,7 +142,7 @@ pipeline {
       steps{
         script{
           withCredentials([
-            usernamePassword(credentialsId:'GitHub-Bot', passwordVariable:'BOT_PASSWORD', usernameVariable:'BOT_USERNAME')
+            usernamePassword(credentialsId:'GitHub_Bot', passwordVariable:'BOT_PASSWORD', usernameVariable:'BOT_USERNAME')
           ]){
             dir('indy'){
               env.INDY_NEXT_VERSION = sh (
