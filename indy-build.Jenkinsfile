@@ -40,7 +40,7 @@ pipeline {
               memory: 4Gi
               cpu: 2000m
             limits:
-              memory: 8Gi
+              memory: 5Gi
               cpu: 4000m
           volumeMounts:
           - mountPath: /home/jenkins/sonatype

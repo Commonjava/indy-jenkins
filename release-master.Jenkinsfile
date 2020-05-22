@@ -24,15 +24,15 @@ pipeline {
           - name: HOME
             value: /home/jenkins
           - name: JAVA_TOOL_OPTIONS
-            value: '-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -Dsun.zip.disableMemoryMapping=true -Xms1024m -Xmx4g'
+            value: '-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -Dsun.zip.disableMemoryMapping=true -Xms1024m -Xmx5g'
           - name: MAVEN_OPTS
             value: -Xmx8g -Xms1024m -XX:MaxPermSize=512m -Xss8m
           resources:
             requests:
-              memory: 4Gi
+              memory: 6Gi
               cpu: 2000m
             limits:
-              memory: 4Gi
+              memory: 6Gi
               cpu: 2000m
           volumeMounts:
           - mountPath: /home/jenkins/sonatype
@@ -98,7 +98,7 @@ pipeline {
         booleanParam(name: 'TAG_INTO_IMAGESTREAM', value: true),
         booleanParam(name: 'INDY_PREPARE_RELEASE', value: true),
         booleanParam(name: 'FUNCTIONAL_TEST', value: true),
-        booleanParam(name: 'STRESS_TEST', value: true),
+        booleanParam(name: 'STRESS_TEST', value: false),
         string(name: 'QUAY_IMAGE_TAG', value: 'latest')
         ]
       }

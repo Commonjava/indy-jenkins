@@ -132,7 +132,7 @@ pipeline {
               ).trim()
               sh """
               mvn help:effective-settings
-              mvn --batch-mode release:prepare -DreleaseVersion=${params.LIB_MAJOR_VERSION} -DdevelopmentVersion=${env.LIB_NEXT_VERSION}-SNAPSHOT -Dtag=indy-parent-${params.LIB_MAJOR_VERSION} -Dusername=${BOT_USERNAME} -Dpassword=${BOT_PASSWORD}
+              mvn --batch-mode release:prepare -DreleaseVersion=${params.LIB_MAJOR_VERSION} -DdevelopmentVersion=${env.LIB_NEXT_VERSION}-SNAPSHOT -Dtag=${params.LIB_NAME}-${params.LIB_MAJOR_VERSION} -Dusername=${BOT_USERNAME} -Dpassword=${BOT_PASSWORD}
               """
             }
           }
