@@ -145,10 +145,11 @@ pipeline {
             usernamePassword(credentialsId:'GitHub_Bot', passwordVariable:'BOT_PASSWORD', usernameVariable:'BOT_USERNAME')
           ]){
             dir('indy'){
-              env.INDY_NEXT_VERSION = sh (
+              env.INDY_NEXT_VERSION = params.INDY_DEV_VERSION ? params.INDY_DEV_VERSION : sh (
                 script: """ echo ${params.INDY_MAJOR_VERSION} | awk -F. -v OFS=. 'NF==1{print ++\$NF}; NF>1{if(length(\$NF+1)>length(\$NF))\$(NF-1)++; \$NF=sprintf("%0*d", length(\$NF), (\$NF+1)%(10^length(\$NF))); print}' """,
                 returnStdout: true
               ).trim()
+              echo "Releasing indy:${params.INDY_MAJOR_VERSION} and setup next dev version ${env.INDY_NEXT_VERSION}-SNAPSHOT"
               sh """
               mvn help:effective-settings
               mvn --batch-mode release:prepare -DreleaseVersion=${params.INDY_MAJOR_VERSION} -DdevelopmentVersion=${env.INDY_NEXT_VERSION}-SNAPSHOT -Dtag=indy-parent-${params.INDY_MAJOR_VERSION} -Dusername=${BOT_USERNAME} -Dpassword=${BOT_PASSWORD}
@@ -167,6 +168,65 @@ pipeline {
             """
           }
         }
+      }
+    }
+    stage('clean up and prepare folder again'){
+      steps{
+        script{withCredentials([
+            usernamePassword(credentialsId:'GitHub_Bot', passwordVariable:'BOT_PASSWORD', usernameVariable:'BOT_USERNAME'),
+            usernamePassword(credentialsId:'OSS-Nexus-Bot', passwordVariable:'OSS_BOT_PASSWORD', usernameVariable:'OSS_BOT_USERNAME'),
+            string(credentialsId: 'gnupg_passphrase', variable: 'PASSPHRASE')
+          ]) {
+            dir('indy'){
+              sh """
+              git reset --hard
+              git clean -f -d
+              git pull origin ${params.INDY_GIT_BRANCH}
+              git checkout release
+              git merge ${params.INDY_GIT_BRANCH}
+              git push https://${BOT_USERNAME}:${BOT_PASSWORD}@`python3 -c 'print("${params.INDY_GIT_REPO}".split("//")[1])'` --all
+              """
+            }
+          }
+        }
+      }
+    }
+    stage('Build'){
+      steps{
+        dir('indy'){
+          echo "Executing build for : ${params.INDY_GIT_REPO} ${params.INDY_MAJOR_VERSION}"
+          sh "mvn -B -V clean verify"
+        }
+      }
+    }
+    stage('tag and push image to quay'){
+      steps{
+        script{
+          openshift.withCluster(){
+            def artifact="indy/deployments/launcher/target/*-skinny.tar.gz"
+            def artifact_file = sh(script: "ls $artifact", returnStdout: true)?.trim()
+            env.TARBALL_URL = "${BUILD_URL}artifact/$artifact_file"
+
+            def data_artifact="indy/deployments/launcher/target/*-data.tar.gz"
+            def data_artifact_file = sh(script: "ls $data_artifact", returnStdout: true)?.trim()
+            env.DATA_TARBALL_URL = "${BUILD_URL}artifact/$data_artifact_file"
+
+            def template = readYaml file: 'openshift/indy-quay-template.yaml'
+            def processed = openshift.process(template,
+              '-p', "TARBALL_URL=${env.TARBALL_URL}",
+              '-p', "DATA_TARBALL_URL=${env.DATA_TARBALL_URL}",
+              //'-p', "QUAY_TAG=${params.INDY_DEV_IMAGE_TAG}"
+              '-p', "QUAY_TAG=latest-release"
+            )
+            def build = c3i.buildAndWait(script: this, objs: processed)
+            echo 'Publish build succeeds!'
+          }
+        }
+      }
+    }
+    stage('Archive release artifact') {
+      steps {
+        archiveArtifacts artifacts: "indy/deployments/launcher/target/*.tar.gz", fingerprint: true
       }
     }
   }

@@ -126,10 +126,11 @@ pipeline {
             usernamePassword(credentialsId:'GitHub_Bot', passwordVariable:'BOT_PASSWORD', usernameVariable:'BOT_USERNAME')
           ]){
             dir(params.LIB_NAME){
-              env.LIB_NEXT_VERSION = sh (
+              env.LIB_NEXT_VERSION = params.LIB_DEV_VERSION ? params.LIB_DEV_VERSION : sh (
                 script: """ echo ${params.LIB_MAJOR_VERSION} | awk -F. -v OFS=. 'NF==1{print ++\$NF}; NF>1{if(length(\$NF+1)>length(\$NF))\$(NF-1)++; \$NF=sprintf("%0*d", length(\$NF), (\$NF+1)%(10^length(\$NF))); print}' """,
                 returnStdout: true
               ).trim()
+              echo "Releasing ${params.LIB_NAME}:${params.LIB_MAJOR_VERSION} and setup next dev version ${env.LIB_NEXT_VERSION}-SNAPSHOT"
               sh """
               mvn help:effective-settings
               mvn --batch-mode release:prepare -DreleaseVersion=${params.LIB_MAJOR_VERSION} -DdevelopmentVersion=${env.LIB_NEXT_VERSION}-SNAPSHOT -Dtag=${params.LIB_NAME}-${params.LIB_MAJOR_VERSION} -Dusername=${BOT_USERNAME} -Dpassword=${BOT_PASSWORD}
@@ -147,6 +148,42 @@ pipeline {
             mvn --batch-mode release:perform
             """
           }
+        }
+      }
+    }
+    stage('clean up and prepare folder again'){
+      steps{
+        script{withCredentials([
+            usernamePassword(credentialsId:'GitHub_Bot', passwordVariable:'BOT_PASSWORD', usernameVariable:'BOT_USERNAME'),
+            usernamePassword(credentialsId:'OSS-Nexus-Bot', passwordVariable:'OSS_BOT_PASSWORD', usernameVariable:'OSS_BOT_USERNAME'),
+            string(credentialsId: 'gnupg_passphrase', variable: 'PASSPHRASE')
+          ]) {
+            dir(params.LIB_NAME){
+              sh """
+              git reset --hard
+              git clean -f -d
+              git pull origin ${params.LIB_GIT_BRANCH}
+              git checkout release
+              git merge ${params.LIB_GIT_BRANCH}
+              git push https://${BOT_USERNAME}:${BOT_PASSWORD}@`python3 -c 'print("${params.LIB_GIT_REPO}".split("//")[1])'` --all
+              """
+            }
+          }
+        }
+      }
+    }
+    stage('Build'){
+      steps{
+        dir(params.LIB_NAME){
+          sh "mvn -B -V clean verify"
+        }
+      }
+    }
+    stage('Archive') {
+      steps {
+        dir(params.LIB_NAME){
+          echo "Archive"
+          archiveArtifacts artifacts: "**/*${params.LIB_MAJOR_VERSION}*", fingerprint: true
         }
       }
     }
