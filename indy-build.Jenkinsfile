@@ -18,12 +18,12 @@ pipeline {
       spec:
         containers:
         - name: jnlp
-          image: registry.redhat.io/openshift3/jenkins-agent-maven-35-rhel7:v3.11
+          image: registry.redhat.io/openshift3/jenkins-agent-maven-35-rhel7:v3.11.219-1
           imagePullPolicy: Always
           tty: true
           env:
           - name: JAVA_TOOL_OPTIONS
-            value: '-XX:+UseContainerSupport -Dsun.zip.disableMemoryMapping=true -Xms1024m -Xmx4g'
+            value: '-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -Dsun.zip.disableMemoryMapping=true -Xms1024m -Xmx4g'
           - name: MAVEN_OPTS
             value: '-Xmx8g -Xms1024m -XX:MaxPermSize=512m -Xss8m'
           - name: USER

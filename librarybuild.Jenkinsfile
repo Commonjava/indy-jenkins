@@ -15,7 +15,7 @@ pipeline {
       spec:
         containers:
         - name: jnlp
-          image: registry.redhat.io/openshift3/jenkins-agent-maven-35-rhel7:v3.11
+          image: registry.redhat.io/openshift3/jenkins-agent-maven-35-rhel7:v3.11.219-1
           imagePullPolicy: Always
           tty: true
           env:
