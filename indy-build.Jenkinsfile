@@ -119,7 +119,7 @@ pipeline {
       steps{
         dir("indy"){
           echo "Executing build for : ${params.INDY_GIT_REPO} ${params.INDY_MAJOR_VERSION}"
-          sh "mvn -B -V clean verify"
+          sh "mvn -B -V clean verify -DskipNpmConfig=false"
         }
       }
     }
@@ -138,7 +138,7 @@ pipeline {
       }
       steps {
         dir("indy"){
-          sh 'mvn -B -V verify -Prun-its -Pci'
+          sh 'mvn -B -V verify -Prun-its -Pci -DskipNpmConfig=false'
         }
       }
     }
