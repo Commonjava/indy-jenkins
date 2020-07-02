@@ -279,7 +279,7 @@ pipeline {
         dir("indy"){
           script{
             sh """
-            mvn help:effective-settings -B -V -DskipTests=true deploy -e
+            mvn help:effective-settings -B -V -DskipTests=true -DskipNpmConfig=false deploy -e
             """
             if (params.INDY_GIT_BRANCH == 'release'){
               sh """

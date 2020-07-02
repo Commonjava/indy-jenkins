@@ -153,21 +153,12 @@ pipeline {
     }
     stage('clean up and prepare folder again'){
       steps{
-        script{withCredentials([
-            usernamePassword(credentialsId:'GitHub_Bot', passwordVariable:'BOT_PASSWORD', usernameVariable:'BOT_USERNAME'),
-            usernamePassword(credentialsId:'OSS-Nexus-Bot', passwordVariable:'OSS_BOT_PASSWORD', usernameVariable:'OSS_BOT_USERNAME'),
-            string(credentialsId: 'gnupg_passphrase', variable: 'PASSPHRASE')
-          ]) {
-            dir(params.LIB_NAME){
-              sh """
-              git reset --hard
-              git clean -f -d
-              git pull origin ${params.LIB_GIT_BRANCH}
-              git checkout release
-              git merge -X theirs -m "Merge branch ${params.INDY_GIT_BRANCH} into release" ${params.LIB_NAME}-${params.LIB_MAJOR_VERSION}
-              git push https://${BOT_USERNAME}:${BOT_PASSWORD}@`python3 -c 'print("${params.LIB_GIT_REPO}".split("//")[1])'` --all
-              """
-            }
+          dir(params.LIB_NAME){
+            sh """
+            git reset --hard
+            git clean -f -d
+            git pull origin ${params.LIB_GIT_BRANCH}
+            """
           }
         }
       }
