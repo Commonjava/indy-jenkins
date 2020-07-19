@@ -27,6 +27,8 @@ pipeline {
             value: '-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -Dsun.zip.disableMemoryMapping=true -Xms1024m -Xmx5g'
           - name: MAVEN_OPTS
             value: -Xmx8g -Xms1024m -XX:MaxPermSize=512m -Xss8m
+          - name: NPMREGISTRY
+            value: 'https://repository.engineering.redhat.com/nexus/repository/registry.npmjs.org'
           resources:
             requests:
               memory: 6Gi
@@ -195,7 +197,7 @@ pipeline {
       steps{
         dir('indy'){
           echo "Executing build for : ${params.INDY_GIT_REPO} ${params.INDY_MAJOR_VERSION}"
-          sh "mvn -B -V clean verify"
+          sh "mvn -B -V clean verify -DskipNpmConfig=false"
         }
       }
     }
