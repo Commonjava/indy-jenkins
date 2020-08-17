@@ -153,6 +153,7 @@ pipeline {
     }
     stage('clean up and prepare folder again'){
       steps{
+        script{
           dir(params.LIB_NAME){
             sh """
             git reset --hard
