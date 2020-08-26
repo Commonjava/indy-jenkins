@@ -201,6 +201,11 @@ pipeline {
         }
       }
     }
+    stage('Archive release artifact') {
+      steps {
+        archiveArtifacts artifacts: "indy/deployments/launcher/target/*.tar.gz", fingerprint: true
+      }
+    }
     stage('tag and push image to quay'){
       steps{
         script{
@@ -224,11 +229,6 @@ pipeline {
             echo 'Publish build succeeds!'
           }
         }
-      }
-    }
-    stage('Archive release artifact') {
-      steps {
-        archiveArtifacts artifacts: "indy/deployments/launcher/target/*.tar.gz", fingerprint: true
       }
     }
   }
