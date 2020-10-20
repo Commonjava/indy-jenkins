@@ -96,7 +96,9 @@ pipeline {
     }
     stage('Build Openshift ImageStream Image') {
       when{
-        return params.PUSH_TO_IMAGESTREAM == true
+        expression {
+          return params.PUSH_TO_IMAGESTREAM == true
+        }
       }
       environment {
         BUILDCONFIG_INSTANCE_ID = "indy-temp-${currentBuild.id}-${UUID.randomUUID().toString().substring(0,7)}"
