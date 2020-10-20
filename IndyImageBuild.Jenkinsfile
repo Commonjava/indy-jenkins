@@ -138,6 +138,7 @@ pipeline {
         }
       }
     }
+  }
   post {
     success {
       script {
