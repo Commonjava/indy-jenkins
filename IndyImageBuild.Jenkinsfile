@@ -69,8 +69,8 @@ pipeline {
     PIPELINE_NAMESPACE = readFile('/run/secrets/kubernetes.io/serviceaccount/namespace').trim()
     PIPELINE_USERNAME = sh(returnStdout: true, script: 'id -un').trim()
     GITHUB_URL='https://github.com/Commonjava/indy'
-    TARBALL_URL = "${env.GITHUB_URL}/release/download/indy-parent-${params.INDY_VERSION}/indy-launcher-${params.INDY_VERSION}-skinny.tar.gz"
-    DATA_TARBALL_URL = "${env.GITHUB_URL}/release/download/indy-parent-${params.INDY_VERSION}/indy-launcher-${params.INDY_VERSION}-data.tar.gz"
+    TARBALL_URL = "${env.GITHUB_URL}/releases/download/indy-parent-${params.INDY_VERSION}/indy-launcher-${params.INDY_VERSION}-skinny.tar.gz"
+    DATA_TARBALL_URL = "${env.GITHUB_URL}/releases/download/indy-parent-${params.INDY_VERSION}/indy-launcher-${params.INDY_VERSION}-data.tar.gz"
   }
   stages {
     stage('Build Quay Image') {
