@@ -69,6 +69,8 @@ pipeline {
     PIPELINE_NAMESPACE = readFile('/run/secrets/kubernetes.io/serviceaccount/namespace').trim()
     PIPELINE_USERNAME = sh(returnStdout: true, script: 'id -un').trim()
     GITHUB_URL='https://www.github.com/Commonjava/indy'
+    TARBALL_URL = "${env.GITHUB_URL}/release/indy-launcher-${params.INDY_VERSION}-skinny.tar.gz"
+    DATA_TARBALL_URL = "${env.GITHUB_URL}/release/indy-launcher-${params.INDY_VERSION}-data.tar.gz"
   }
   stages {
     stage('Build Quay Image') {
@@ -80,10 +82,6 @@ pipeline {
       steps{
         script{
           openshift.withCluster(){
-            env.TARBALL_URL = "${env.GITHUB_URL}/release/indy-launcher-${params.INDY_VERSION}-skinny.tar.gz"
-
-            env.DATA_TARBALL_URL = "${env.GITHUB_URL}/release/indy-launcher-${params.INDY_VERSION}-data.tar.gz"
-
             def template = readYaml file: 'openshift/indy-quay-template.yaml'
             def processed = openshift.process(template,
               '-p', "TARBALL_URL=${env.TARBALL_URL}",
