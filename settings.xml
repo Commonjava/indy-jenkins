@@ -60,4 +60,8 @@
     <activeProfile>internal-resolve</activeProfile>
     <activeProfile>internal-deploy</activeProfile>
   </activeProfiles>
+  <pluginGroups>
+    <pluginGroup>org.apache.maven.plugins</pluginGroup>
+    <pluginGroup>org.codehaus.mojo</pluginGroup>
+  </pluginGroups>
 </settings>
