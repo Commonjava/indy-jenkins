@@ -151,34 +151,6 @@ pipeline {
         }
       }
     }
-    stage('clean up and prepare folder again'){
-      steps{
-        script{
-          dir(params.LIB_NAME){
-            sh """
-            git reset --hard
-            git clean -f -d
-            git pull origin ${params.LIB_GIT_BRANCH}
-            """
-          }
-        }
-      }
-    }
-    stage('Build'){
-      steps{
-        dir(params.LIB_NAME){
-          sh "mvn -B -V clean verify"
-        }
-      }
-    }
-    stage('Archive') {
-      steps {
-        dir(params.LIB_NAME){
-          echo "Archive"
-          archiveArtifacts artifacts: "**/*${params.LIB_MAJOR_VERSION}*", fingerprint: true
-        }
-      }
-    }
   }
   post {
     success {
