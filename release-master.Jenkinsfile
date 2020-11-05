@@ -26,7 +26,7 @@ pipeline {
           - name: HOME
             value: /home/jenkins
           - name: JAVA_TOOL_OPTIONS
-            value: '-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -Dsun.zip.disableMemoryMapping=true -Xms1024m -Xmx5g'
+            value: '-XX:+UnlockExperimentalVMOptions -Dsun.zip.disableMemoryMapping=true -Xms1024m -Xmx5g'
           - name: MAVEN_OPTS
             value: -Xmx6g -Xms1024m -XX:MaxPermSize=512m -Xss8m
           - name: NPMREGISTRY
