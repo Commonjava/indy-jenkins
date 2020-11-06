@@ -114,7 +114,7 @@ pipeline {
       }
       steps{
         sh """#!/bin/bash
-        curl -X POST "http://indy-infra-nos-automation.cloud.paas.psi.redhat.com/api/admin/stores/maven/hosted" -H "accept: application/json" -H "Content-Type: application/json" -d "{ \\"key\\": \\"maven:hosted:${params.INDY_MAJOR_VERSION}-jenkins-${env.BUILD_NUMBER}\\", \\"disabled\\": false, \\"doctype\\": \\"hosted\\", \\"name\\": \\"${params.INDY_MAJOR_VERSION}-jenkins-${env.BUILD_NUMBER}\\", \\"allow_releases\\": true}"
+        curl -X POST "http://indy-infra-spmm-automation.svc.cluster.local/api/admin/stores/maven/hosted" -H "accept: application/json" -H "Content-Type: application/json" -d "{ \\"key\\": \\"maven:hosted:${params.INDY_MAJOR_VERSION}-jenkins-${env.BUILD_NUMBER}\\", \\"disabled\\": false, \\"doctype\\": \\"hosted\\", \\"name\\": \\"${params.INDY_MAJOR_VERSION}-jenkins-${env.BUILD_NUMBER}\\", \\"allow_releases\\": true}"
         sed -i 's/{{_BUILD_ID}}/${params.INDY_MAJOR_VERSION}-jenkins-${env.BUILD_NUMBER}/g' /home/jenkins/.m2/settings.xml
         """
       }
@@ -270,7 +270,7 @@ pipeline {
         }
       }
       steps{
-        build job: 'indy-stress-test', propagate: true, wait: true, parameters: [string(name: 'THREAD', value: '5'), string(name: 'LOOPS', value: '3'), string(name: 'HOSTNAME', value: 'indy-perf-nos-automation.cloud.paas.psi.redhat.com'), string(name: 'PORT', value: '80')]
+        build job: 'indy-stress-test', propagate: true, wait: true, parameters: [string(name: 'THREAD', value: '5'), string(name: 'LOOPS', value: '3'), string(name: 'HOSTNAME', value: 'indy-perf-spmm-automation.svc.cluster.local'), string(name: 'PORT', value: '80')]
       }
     }
     stage('deploy indy artifact'){
@@ -287,7 +287,7 @@ pipeline {
             """
             if (params.INDY_GIT_BRANCH == 'release'){
               sh """
-              curl -X POST "http://indy-infra-nos-automation.cloud.paas.psi.redhat.com/api/promotion/paths/promote" -H "accept: application/json" -H "Content-Type: application/json" -d "{\\"source\\": \\"maven:hosted:${params.INDY_MAJOR_VERSION}-jenkins-${env.BUILD_NUMBER}\\", \\"target\\": \\"maven:hosted:local-deployments\\"}"
+              curl -X POST "http://indy-infra-spmm-automation.svc.cluster.local/api/promotion/paths/promote" -H "accept: application/json" -H "Content-Type: application/json" -d "{\\"source\\": \\"maven:hosted:${params.INDY_MAJOR_VERSION}-jenkins-${env.BUILD_NUMBER}\\", \\"target\\": \\"maven:hosted:local-deployments\\"}"
               """
             }
           }
@@ -325,7 +325,7 @@ pipeline {
         if (params.INDY_GIT_BRANCH == 'release' || params.INDY_PREPARE_RELEASE == true){
           try{
             sh """
-            curl -X DELETE "http://indy-infra-nos-automation.cloud.paas.psi.redhat.com/api/admin/stores/maven/hosted/${params.INDY_MAJOR_VERSION}-jenkins-${env.BUILD_NUMBER}" -H "accept: application/json"
+            curl -X DELETE "http://indy-infra-spmm-automation.svc.cluster.local/api/admin/stores/maven/hosted/${params.INDY_MAJOR_VERSION}-jenkins-${env.BUILD_NUMBER}" -H "accept: application/json"
             """
           }catch(e){
             echo "Error teardown hosted repo"

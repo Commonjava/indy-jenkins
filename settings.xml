@@ -48,6 +48,7 @@
 
       <properties>
         <altReleaseDeploymentRepository>
+<<<<<<< HEAD
           indy::default::http://indy-infra-spmm-automation.apps.ocp4.prod.psi.redhat.com/api/folo/track/{{_BUILD_ID}}/maven/hosted/{{_BUILD_ID}}
         </altReleaseDeploymentRepository>
         <altSnapshotDeploymentRepository>
@@ -56,6 +57,16 @@
         <!-- NOTE: For older plugin versions ONLY...disabled here
         <altDeploymentRepository>
           indy::default::http://indy-infra-spmm-automation.apps.ocp4.prod.psi.redhat.com/api/content/maven/hosted/local-releases
+=======
+          indy::default::http://indy-infra.spmm-automation.svc.cluster.local/api/folo/track/{{_BUILD_ID}}/maven/hosted/{{_BUILD_ID}}
+        </altReleaseDeploymentRepository>
+        <altSnapshotDeploymentRepository>
+          indy::default::http://indy-infra.spmm-automation.svc.cluster.local/api/content/maven/hosted/local-deployments
+        </altSnapshotDeploymentRepository>
+        <!-- NOTE: For older plugin versions ONLY...disabled here
+        <altDeploymentRepository>
+          indy::default::http://indy-infra-spmm-automation.svc.cluster.local/api/content/maven/hosted/local-releases
+>>>>>>> aaf9144 (replace url to ocp4 edition)
         </altDeploymentRepository>
          -->
       </properties>
