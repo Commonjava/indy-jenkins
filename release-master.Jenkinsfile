@@ -26,16 +26,16 @@ pipeline {
           - name: JAVA_TOOL_OPTIONS
             value: '-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -Dsun.zip.disableMemoryMapping=true -Xms1024m -Xmx5g'
           - name: MAVEN_OPTS
-            value: -Xmx8g -Xms1024m -XX:MaxPermSize=512m -Xss8m
+            value: -Xmx6g -Xms1024m -XX:MaxPermSize=512m -Xss8m
           - name: NPMREGISTRY
             value: 'https://repository.engineering.redhat.com/nexus/repository/registry.npmjs.org'
           resources:
             requests:
-              memory: 6Gi
+              memory: 4Gi
               cpu: 2000m
             limits:
-              memory: 6Gi
-              cpu: 2000m
+              memory: 8Gi
+              cpu: 4000m
           volumeMounts:
           - mountPath: /home/jenkins/sonatype
             name: volume-0
