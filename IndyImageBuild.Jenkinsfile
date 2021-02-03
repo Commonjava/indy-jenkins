@@ -27,7 +27,7 @@ pipeline {
           - name: JAVA_TOOL_OPTIONS
             value: '-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -Dsun.zip.disableMemoryMapping=true -Xms1024m -Xmx4g'
           - name: MAVEN_OPTS
-            value: '-Xmx8g -Xms1024m -XX:MaxPermSize=512m -Xss8m'
+            value: '-Xmx4g -Xms1024m -XX:MaxPermSize=512m -Xss8m'
           - name: USER
             value: 'jenkins-k8s-config'
           - name: IMG_BUILD_HOOKS
@@ -42,7 +42,7 @@ pipeline {
               memory: 4Gi
               cpu: 2000m
             limits:
-              memory: 5Gi
+              memory: 8Gi
               cpu: 4000m
           volumeMounts:
           - mountPath: /home/jenkins/sonatype
