@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: sonarqube-container-template
+labels:
+  template: "sonarqube-container-template"
+parameters:
+- name: SONAR_VERSION
+  displayName: sonarqube app version
+  required: false
+  value: ''
+- name: QUAY_TAG
+  displayName: tag to push to quay
+  required: false
+  value: 'latest'
+objects:
+- kind: "BuildConfig"
+  apiVersion: "v1"
+  metadata:
+    labels:
+      app: "sonarqube-binary-publish"
+      build: "sonarqube-binary-publish"
+    name: "sonarqube-binary-publish"
+  spec:
+    output:
+      pushSecret:
+        name: quaydotio-nosbot
+      to:
+        kind: DockerImage
+        name: quay.io/factory2/sonarqube:${QUAY_TAG}
+    runPolicy: Serial
+    source:
+      contextDir: sonarqube
+      git:
+        ref: "master"
+        uri: "https://github.com/Commonjava/commonjava-images.git"
+    strategy:
+      dockerStrategy:
+        noCache: true
