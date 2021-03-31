@@ -38,8 +38,6 @@ pipeline {
           - name: HOME
             value: /home/jenkins
           - name: JAVA_HOME
-            value: /usr/lib/jvm/java-1.8.0-openjdk
-          - name: JAVA_11_HOME
             value: /usr/lib/jvm/java-11-openjdk
           resources:
             requests:

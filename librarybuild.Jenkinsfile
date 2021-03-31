@@ -15,10 +15,12 @@ pipeline {
       spec:
         containers:
         - name: jnlp
-          image: registry.redhat.io/openshift3/jenkins-agent-maven-35-rhel7:v3.11.219-1
+          image: quay.io/factory2/jenkins-agent:maven-36-rhel7-latest
           imagePullPolicy: Always
           tty: true
           env:
+          - name: JAVA_HOME:
+            value: /usr/lib/jvm/java-11-openjdk
           - name: JAVA_TOOL_OPTIONS
             value: '-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -Dsun.zip.disableMemoryMapping=true -Xms1024m -Xmx4g'
           - name: MAVEN_OPTS
