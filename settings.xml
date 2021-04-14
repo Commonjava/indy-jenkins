@@ -53,11 +53,6 @@
         <altSnapshotDeploymentRepository>
           indy::default::http://indy-infra.spmm-automation.svc.cluster.local/api/content/maven/hosted/local-deployments
         </altSnapshotDeploymentRepository>
-        <!-- NOTE: For older plugin versions ONLY...disabled here
-        <altDeploymentRepository>
-          indy::default::http://indy-infra-spmm-automation.svc.cluster.local/api/content/maven/hosted/local-releases
-        </altDeploymentRepository>
-         -->
       </properties>
     </profile>
   </profiles>
