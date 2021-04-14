@@ -18,14 +18,14 @@ pipeline {
       spec:
         containers:
         - name: jnlp
-          image: registry.redhat.io/openshift3/jenkins-agent-maven-35-rhel7:v3.11.219-1
+          image: registry.redhat.io/openshift4/ose-jenkins-agent-maven:v4.5.0
           imagePullPolicy: Always
           tty: true
           env:
           - name: NPMREGISTRY
             value: 'https://repository.engineering.redhat.com/nexus/repository/registry.npmjs.org'
           - name: JAVA_TOOL_OPTIONS
-            value: '-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap -Dsun.zip.disableMemoryMapping=true -Xms1024m -Xmx4g'
+            value: '-XX:+UnlockExperimentalVMOptions -Dsun.zip.disableMemoryMapping=true -Xms1024m -Xmx4g'
           - name: MAVEN_OPTS
             value: '-Xmx4g -Xms1024m -XX:MaxPermSize=512m -Xss8m'
           - name: USER
@@ -35,6 +35,8 @@ pipeline {
               secretKeyRef:
                 key: img-build-hooks.json
                 name: img-build-hooks-secrets
+          - name: JAVA_HOME
+            value: /usr/lib/jvm/java-11-openjdk
           - name: HOME
             value: /home/jenkins
           resources:
