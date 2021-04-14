@@ -15,11 +15,7 @@ pipeline {
       spec:
         containers:
         - name: jnlp
-<<<<<<< HEAD
           image: quay.io/factory2/jenkins-agent:maven-36-rhel7-latest
-=======
-          image: registry.redhat.io/openshift4/ose-jenkins-agent-maven:v4.5.0
->>>>>>> fd4872f (switched back to master and replaced old image)
           imagePullPolicy: Always
           tty: true
           env:
@@ -89,7 +85,7 @@ pipeline {
       steps{
         sh """# /bin/bash
         echo 'Executing build for : ${params.LIB_GIT_REPO} ${params.LIB_MAJOR_VERSION}'
-        curl -X POST "http://indy-infra-spmm-automation.svc.cluster.local/api/admin/stores/maven/hosted" -H "accept: application/json" -H "Content-Type: application/json" -d "{ \\"key\\": \\"maven:hosted:${params.LIB_NAME}-${params.LIB_MAJOR_VERSION}-jenkins-${env.BUILD_NUMBER}\\", \\"disabled\\": false, \\"doctype\\": \\"hosted\\", \\"name\\": \\"${params.LIB_NAME}-${params.LIB_MAJOR_VERSION}-jenkins-${env.BUILD_NUMBER}\\", \\"allow_releases\\": true}"
+        curl -X POST "http://indy-infra-nos-automation.cloud.paas.psi.redhat.com/api/admin/stores/maven/hosted" -H "accept: application/json" -H "Content-Type: application/json" -d "{ \\"key\\": \\"maven:hosted:${params.LIB_NAME}-${params.LIB_MAJOR_VERSION}-jenkins-${env.BUILD_NUMBER}\\", \\"disabled\\": false, \\"doctype\\": \\"hosted\\", \\"name\\": \\"${params.LIB_NAME}-${params.LIB_MAJOR_VERSION}-jenkins-${env.BUILD_NUMBER}\\", \\"allow_releases\\": true}"
         sed -i 's/{{_BUILD_ID}}/${params.LIB_NAME}-${params.LIB_MAJOR_VERSION}-jenkins-${env.BUILD_NUMBER}/g' /home/jenkins/.m2/settings.xml
         cd ${params.LIB_NAME}
         mvn versions:set -DnewVersion=${params.LIB_MAJOR_VERSION}
@@ -128,7 +124,7 @@ pipeline {
           sh 'mvn help:effective-settings -B -V -DskipTests=true deploy -e'
           if (params.LIB_GIT_BRANCH == 'release'){
               sh """
-              curl -X POST "http://indy-infra-spmm-automation.svc.cluster.local/api/promotion/paths/promote" -H "accept: application/json" -H "Content-Type: application/json" -d "{\\"source\\": \\"maven:hosted:${params.LIB_NAME}-${params.LIB_MAJOR_VERSION}-jenkins-${env.BUILD_NUMBER}\\", \\"target\\": \\"maven:hosted:local-deployments\\"}"
+              curl -X POST "http://indy-infra-nos-automation.cloud.paas.psi.redhat.com/api/promotion/paths/promote" -H "accept: application/json" -H "Content-Type: application/json" -d "{\\"source\\": \\"maven:hosted:${params.LIB_NAME}-${params.LIB_MAJOR_VERSION}-jenkins-${env.BUILD_NUMBER}\\", \\"target\\": \\"maven:hosted:local-deployments\\"}"
               """
           }
         }
@@ -146,7 +142,7 @@ pipeline {
         if (params.LIB_GIT_BRANCH == 'release'){
           try{
             sh """
-            curl -X DELETE "http://indy-infra-spmm-automation.svc.cluster.local/api/admin/stores/maven/hosted/${params.LIB_NAME}-${params.LIB_MAJOR_VERSION}-jenkins-${env.BUILD_NUMBER}" -H "accept: application/json"
+            curl -X DELETE "http://indy-infra-nos-automation.cloud.paas.psi.redhat.com/api/admin/stores/maven/hosted/${params.LIB_NAME}-${params.LIB_MAJOR_VERSION}-jenkins-${env.BUILD_NUMBER}" -H "accept: application/json"
             """
           }catch(e){
             echo "Error teardown hosted repo"

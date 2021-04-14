@@ -18,11 +18,7 @@ pipeline {
       spec:
         containers:
         - name: jnlp
-<<<<<<< HEAD
-          image: registry.redhat.io/openshift3/jenkins-agent-maven-35-rhel7:v3.11.286-1
-=======
           image: registry.redhat.io/openshift4/ose-jenkins-agent-maven:v4.5.0
->>>>>>> fd4872f (switched back to master and replaced old image)
           imagePullPolicy: Always
           tty: true
           env:
