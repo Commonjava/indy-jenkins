@@ -19,7 +19,7 @@ pipeline {
           imagePullPolicy: Always
           tty: true
           env:
-          - name: JAVA_HOME:
+          - name: JAVA_HOME
             value: /usr/lib/jvm/java-11-openjdk
           - name: JAVA_TOOL_OPTIONS
             value: '-XX:+UnlockExperimentalVMOptions -Dsun.zip.disableMemoryMapping=true -Xms1024m -Xmx4g'
