@@ -19,7 +19,7 @@ pipeline {
           imagePullPolicy: Always
           tty: true
           env:
-          - name: JAVA_HOME:
+          - name: JAVA_HOME
             value: /usr/lib/jvm/java-11-openjdk
           - name: USER
             value: 'jenkins-k8s-config'
