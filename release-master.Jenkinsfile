@@ -1,3 +1,6 @@
+library identifier: 'c3i@master', changelog: false,
+  retriever: modernSCM([$class: 'GitSCMSource', remote: 'https://pagure.io/c3i-library.git'])
+import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
 pipeline {
   agent {
     kubernetes {
