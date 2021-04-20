@@ -15,7 +15,7 @@ pipeline {
       spec:
         containers:
         - name: jnlp
-          image: quay.io/kaine/indy-stress-tester:latest
+          image: registry.redhat.io/openshift3/jenkins-agent-maven-35-rhel7:v3.11.286-1
           imagePullPolicy: Always
           tty: true
           env:
