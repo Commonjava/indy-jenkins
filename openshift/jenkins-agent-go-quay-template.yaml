@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: jenkins-agent-go-container-template
+labels:
+  template: "jenkins-agent-go-container-template"
+parameters:
+- name: JENKINS_AGENT_GO_VERSION
+  displayName: "jenkins-agent-go app version"
+  required: false
+  value: ''
+- name: QUAY_TAG
+  displayName: tag to push to quay
+  required: false
+  value: 'latest'
+objects:
+- kind: "BuildConfig"
+  apiVersion: "v1"
+  metadata:
+    labels:
+      app: "jenkins-agent-go-binary-publish"
+      build: "jenkins-agent-go-binary-publish"
+    name: "jenkins-agent-go-binary-publish"
+  spec:
+    output:
+      pushSecret:
+        name: quaydotio-nosbot
+      to:
+        kind: DockerImage
+        name: quay.io/factory2/spmm-jenkins-agent-go-centos7:${QUAY_TAG}
+    runPolicy: Serial
+    source:
+      contextDir: spmm-jenkins-agent-go
+      git:
+        ref: "master"
+        uri: "https://github.com/Commonjava/commonjava-images.git"
+    strategy:
+      dockerStrategy:
+        noCache: true
