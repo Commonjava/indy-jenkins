@@ -73,7 +73,7 @@ pipeline {
       steps{
         script{
           openshift.withCluster(){
-            def template = readYaml file: 'openshift/jengins-agent-go-quay-template.yaml'
+            def template = readYaml file: 'openshift/jenkins-agent-go-quay-template.yaml'
             def processed = openshift.process(template,
               '-p', "QUAY_TAG='${QUAY_TAG}'"
             )
