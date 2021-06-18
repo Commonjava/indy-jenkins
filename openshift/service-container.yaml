@@ -1,0 +1,68 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: service-container-template
+labels:
+  template: "service-container-template"
+parameters:
+- name: NAME
+  displayName: Short unique identifier for the templated instances.
+  required: true
+  value: "sidecar-container"
+- name: SVC_IMAGESTREAM_NAME
+  displayName: ImageStream name of the resulting image
+  required: true
+  value: sidecar-jvm
+- name: SVC_IMAGE_TAG
+  displayName: Tag of resulting image
+  required: true
+  value: latest
+- name: SVC_IMAGESTREAM_NAMESPACE
+  displayName: Namespace of ImageStream for service container images
+  required: false
+- name: SVC_VERSION
+  displayName: service app version
+  required: false
+  value: ''
+- name: BUILD_URL
+  displayName: url of service jenkins build with artifact
+  required: true
+  value: ''
+- name: APP_JAR_NAME
+  displayName: artifact jar file name
+  required: true
+  value: ''
+objects:
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    name: "${SVC_IMAGESTREAM_NAME}"
+    labels:
+      app: "${NAME}"
+- kind: "BuildConfig"
+  apiVersion: "v1"
+  metadata:
+    labels:
+      app: "${NAME}"
+      build: "${NAME}"
+    name: "${NAME}"
+  spec:
+    output:
+      to:
+        kind: "ImageStreamTag"
+        name: "${SVC_IMAGESTREAM_NAME}:${SVC_IMAGE_TAG}"
+        namespace: "${SVC_IMAGESTREAM_NAMESPACE}"
+    runPolicy: Serial
+    source:
+      contextDir: service
+      git:
+        ref: "master"
+        uri: "https://github.com/Commonjava/commonjava-images.git"
+    strategy:
+      dockerStrategy:
+        noCache: true
+        env:
+          - name: "build_url"
+            value: "${BUILD_URL}"
+          - name: "app_jar_name"
+            value: "${APP_JAR_NAME}"
