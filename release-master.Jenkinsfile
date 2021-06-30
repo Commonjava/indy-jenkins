@@ -121,12 +121,15 @@ pipeline {
             string(credentialsId: 'gnupg_passphrase', variable: 'PASSPHRASE')
           ]) {
             dir('indy'){
+              sh """
+              mkdir -p /home/jenkins/.m2
+              cp toolchains.xml /home/jenkins/.m2/toolchains.xml
+              """
               env.INDY_PMD_VIOLATION = sh (
                   script: 'mvn -B -s ../settings.xml -Pformatting,cq install -Dpmd.skip=true',
                   returnStatus: true
               ) == 0
               sh """
-              mkdir -p /home/jenkins/.m2
               cp ../settings-release.xml /home/jenkins/.m2/settings.xml
               sed -i 's/{{_USERNAME}}/${OSS_BOT_USERNAME}/g' /home/jenkins/.m2/settings.xml
               sed -i 's/{{_PASSWORD}}/${OSS_BOT_PASSWORD}/g' /home/jenkins/.m2/settings.xml
