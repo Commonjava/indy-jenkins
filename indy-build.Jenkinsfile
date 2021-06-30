@@ -37,8 +37,6 @@ pipeline {
                 name: img-build-hooks-secrets
           - name: HOME
             value: /home/jenkins
-          - name: JAVA_HOME
-            value: /usr/lib/jvm/java-11-openjdk
           resources:
             requests:
               memory: 4Gi
@@ -69,6 +67,7 @@ pipeline {
     timeout(time: 120, unit: 'MINUTES')
   }
   environment {
+    JAVA_HOME = "/usr/lib/jvm/java-${params.JDK_VERSION}-openjdk"
     PIPELINE_NAMESPACE = readFile('/run/secrets/kubernetes.io/serviceaccount/namespace').trim()
     PIPELINE_USERNAME = sh(returnStdout: true, script: 'id -un').trim()
     GITHUB_API_URL='https://api.github.com/repos/Commonjava/indy'

@@ -46,6 +46,7 @@ This is a reference of critical step for CI/CD, and a requirement if `STRESS_TES
 |Parameters      |Type |Default Value                                          |
 |----------------|-----|-------------------------------------------------------|
 |JENKINS_AGENT_CLOUD_NAME|String|openshift|
+|JDK_VERSION|String|11|
 |INDY_GIT_BRANCH|String|master|
 |INDY_GIT_REPO|String|https://github.com/Commonjava/indy|
 |INDY_MAJOR_VERSION|String|2.0.0|
@@ -54,6 +55,7 @@ This is a reference of critical step for CI/CD, and a requirement if `STRESS_TES
 |BOT_EMAIL|String|*@Commonjava.org|
 |SKIP_VERIFICATION|Boolean|false|
 
+* `JDK_VERSION` supports only 1.8.0 or 11
 * `INDY_GIT_BRANCH` should be maint or master etc, but proceed with careful, as it perform merge and push.
 * `INDY_DEV_VERSION` don't have to set this up if you are about to increase it by one. e.g. 2.2.0 -> 2.2.1-SNAPSHOT and do not include "-SNAPSHOT"
 * Credential `GitHub_Bot` in Jenkins is GitHub account username and password, able to access `INDY_GIT_BRANCH`.
@@ -65,6 +67,7 @@ This is a reference of critical step for CI/CD, and a requirement if `STRESS_TES
 |Parameters      |Type |Default Value                                          |
 |----------------|-----|-------------------------------------------------------|
 |JENKINS_AGENT_CLOUD_NAME|String|openshift|
+|JDK_VERSION|String|11|
 |LIB_GIT_BRANCH|String|master|
 |LIB_GIT_REPO|String|https://github.com/Commonjava/weft|
 |LIB_NAME|String|weft|
@@ -73,6 +76,7 @@ This is a reference of critical step for CI/CD, and a requirement if `STRESS_TES
 |MAIL_ADDRESS|String|liyu@example.com|
 |BOT_EMAIL|String|*@Commonjava.org|
 
+* `JDK_VERSION` supports only 1.8.0 or 11
 * `LIB_MAJOR_VERSION` set correct version you're about to release!
 * `LIB_DEV_VERSION` don't have to set this up if you are about to increase it by one. e.g. 1.7 -> 1.8-SNAPSHOT and do not include "-SNAPSHOT"
 * Credential `GitHub_Bot` in Jenkins is GitHub account username and password, able to access `LIB_GIT_BRANCH`.
@@ -83,6 +87,7 @@ This is a reference of critical step for CI/CD, and a requirement if `STRESS_TES
 |Parameters      |Type |Default Value                                          |
 |----------------|-----|-------------------------------------------------------|
 |JENKINS_AGENT_CLOUD_NAME|String|openshift|
+|JDK_VERSION|String|11|
 |INDY_GIT_BRANCH|String|master|
 |INDY_GIT_REPO|String|https://github.com/Commonjava/indy|
 |INDY_MAJOR_VERSION|String|2.0.0|
@@ -99,7 +104,7 @@ This is a reference of critical step for CI/CD, and a requirement if `STRESS_TES
 |STRESS_TEST|Boolean|true|
 |QUAY_IMAGE_TAG|String|latest|
 
-
+* `JDK_VERSION` supports only 1.8.0 or 11
 * `JENKINS_AGENT_CLOUD_NAME` should be kubernetes plugin cluser name
 * `INDY_GIT_BRANCH` can also be git commit reference e.g.:commit id or origin/pull/1507/head
 * `INDY_MAJOR_VERSION` is optional, only needed when release a new version e.g. building release artifact.
