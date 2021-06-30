@@ -22,8 +22,6 @@ pipeline {
           imagePullPolicy: Always
           tty: true
           env:
-          - name: JAVA_HOME
-            value: /usr/lib/jvm/java-11-openjdk
           - name: USER
             value: 'jenkins-k8s-config'
           - name: HOME
@@ -70,6 +68,7 @@ pipeline {
     timeout(time: 180, unit: 'MINUTES')
   }
   environment {
+    JAVA_HOME = "/usr/lib/jvm/java-${params.JDK_VERSION}-openjdk"
     PIPELINE_NAMESPACE = readFile('/run/secrets/kubernetes.io/serviceaccount/namespace').trim()
     PIPELINE_USERNAME = sh(returnStdout: true, script: 'id -un').trim()
   }
@@ -100,6 +99,7 @@ pipeline {
       steps{
         build job: 'indy-playground', propagate: true, wait: true, parameters: [string(name: 'INDY_GIT_BRANCH', value: "${params.INDY_GIT_BRANCH}"),
         string(name: 'INDY_GIT_REPO', value: "${params.INDY_GIT_REPO}"),
+        string(name: 'JDK_VERSION', value: "${params.JDK_VERSION}"),
         string(name: 'INDY_MAJOR_VERSION', value: "${params.INDY_MAJOR_VERSION}"),
         string(name: 'INDY_DEV_IMAGE_TAG', value: "latest"),
         booleanParam(name: 'TAG_INTO_IMAGESTREAM', value: true),
@@ -119,12 +119,15 @@ pipeline {
             string(credentialsId: 'gnupg_passphrase', variable: 'PASSPHRASE')
           ]) {
             dir('indy'){
+              sh """
+              mkdir -p /home/jenkins/.m2
+              cp toolchains.xml /home/jenkins/.m2/toolchains.xml
+              """
               env.INDY_PMD_VIOLATION = sh (
                   script: 'mvn -B -s ../settings.xml -Pformatting,cq install -Dpmd.skip=true',
                   returnStatus: true
               ) == 0
               sh """
-              mkdir -p /home/jenkins/.m2
               cp ../settings-release.xml /home/jenkins/.m2/settings.xml
               sed -i 's/{{_USERNAME}}/${OSS_BOT_USERNAME}/g' /home/jenkins/.m2/settings.xml
               sed -i 's/{{_PASSWORD}}/${OSS_BOT_PASSWORD}/g' /home/jenkins/.m2/settings.xml
