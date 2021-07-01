@@ -113,7 +113,7 @@ pipeline {
       }
       steps{
         sh """#!/bin/bash
-        curl -X POST "http://indy-infra-spmm-automation.svc.cluster.local/api/admin/stores/maven/hosted" -H "accept: application/json" -H "Content-Type: application/json" -d "{ \\"key\\": \\"maven:hosted:${params.INDY_MAJOR_VERSION}-jenkins-${env.BUILD_NUMBER}\\", \\"disabled\\": false, \\"doctype\\": \\"hosted\\", \\"name\\": \\"${params.INDY_MAJOR_VERSION}-jenkins-${env.BUILD_NUMBER}\\", \\"allow_releases\\": true}"
+        curl -X POST "http://indy-infra.spmm-automation.svc.cluster.local/api/admin/stores/maven/hosted" -H "accept: application/json" -H "Content-Type: application/json" -d "{ \\"key\\": \\"maven:hosted:${params.INDY_MAJOR_VERSION}-jenkins-${env.BUILD_NUMBER}\\", \\"disabled\\": false, \\"doctype\\": \\"hosted\\", \\"name\\": \\"${params.INDY_MAJOR_VERSION}-jenkins-${env.BUILD_NUMBER}\\", \\"allow_releases\\": true}"
         sed -i 's/{{_BUILD_ID}}/${params.INDY_MAJOR_VERSION}-jenkins-${env.BUILD_NUMBER}/g' /home/jenkins/.m2/settings.xml
         """
       }
@@ -286,7 +286,7 @@ pipeline {
             """
             if (params.INDY_GIT_BRANCH == 'release'){
               sh """
-              curl -X POST "http://indy-infra-spmm-automation.svc.cluster.local/api/promotion/paths/promote" -H "accept: application/json" -H "Content-Type: application/json" -d "{\\"source\\": \\"maven:hosted:${params.INDY_MAJOR_VERSION}-jenkins-${env.BUILD_NUMBER}\\", \\"target\\": \\"maven:hosted:local-deployments\\"}"
+              curl -X POST "http://indy-infra.spmm-automation.svc.cluster.local/api/promotion/paths/promote" -H "accept: application/json" -H "Content-Type: application/json" -d "{\\"source\\": \\"maven:hosted:${params.INDY_MAJOR_VERSION}-jenkins-${env.BUILD_NUMBER}\\", \\"target\\": \\"maven:hosted:local-deployments\\"}"
               """
             }
           }
@@ -324,7 +324,7 @@ pipeline {
         if (params.INDY_GIT_BRANCH == 'release' || params.INDY_PREPARE_RELEASE == true){
           try{
             sh """
-            curl -X DELETE "http://indy-infra-spmm-automation.svc.cluster.local/api/admin/stores/maven/hosted/${params.INDY_MAJOR_VERSION}-jenkins-${env.BUILD_NUMBER}" -H "accept: application/json"
+            curl -X DELETE "http://indy-infra.spmm-automation.svc.cluster.local/api/admin/stores/maven/hosted/${params.INDY_MAJOR_VERSION}-jenkins-${env.BUILD_NUMBER}" -H "accept: application/json"
             """
           }catch(e){
             echo "Error teardown hosted repo"
