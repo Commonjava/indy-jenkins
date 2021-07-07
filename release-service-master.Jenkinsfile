@@ -122,7 +122,7 @@ pipeline {
       steps{
         dir(params.SVC_NAME){
           echo "Executing build for : ${params.SVC_GIT_REPO} ${params.SVC_MAJOR_VERSION}"
-          sh "mvn -B clean package"
+          sh "mvn -B clean package ${params.BUILD_PARAM}"
         }
       }
     }
@@ -138,7 +138,7 @@ pipeline {
           echo UEsFBgAAAAAAAAAAAAAAAAAAAAAAAA== | base64 -d > quarkus.zip
           zip -q -9 -j quarkus.zip quarkus/*
           """
-          archiveArtifacts artifacts: "lib.zip,quarkus-run.jar,app/*.jar,quarkus.zip", fingerprint: true
+          archiveArtifacts artifacts: "target/quarkus-app/lib.zip,target/quarkus-app/quarkus-run.jar,target/quarkus-app/app/*.jar,target/quarkus-app/quarkus.zip", fingerprint: true
         }
       }
     }
@@ -147,30 +147,32 @@ pipeline {
         BUILDCONFIG_INSTANCE_ID = "service-temp-${currentBuild.id}-${UUID.randomUUID().toString().substring(0,7)}"
       }
       steps {
-        script {
-          openshift.withCluster() {
-            def artifact="app/${params.SVC_NAME}-${params.SVC_MAJOR_VERSION}-SNAPSHOT.jar"
-            def artifact_file = sh(script: "ls $artifact", returnStdout: true)?.trim()
-            env.JAR_NAME = "${BUILD_URL}artifact/$artifact_file"
+        dir(params.SVC_NAME){
+          script {
+            openshift.withCluster() {
+              def artifact="target/quarkus-app/app/*${params.SVC_MAJOR_VERSION}*.jar"
+              def artifact_file = sh(script: "ls $artifact", returnStdout: true)?.trim()
+              env.JAR_NAME = "${BUILD_URL}artifact/$artifact_file"
 
-            def template = readYaml file: 'openshift/service-container.yaml'
-            def processed = openshift.process(template,
-              '-p', "NAME=${env.BUILDCONFIG_INSTANCE_ID}",
-              '-p', "SVC_IMAGE_TAG=${env.TEMP_TAG}",
-              '-p', "SVC_VERSION=${params.SVC_MAJOR_VERSION}",
-              '-p', "SVC_IMAGESTREAM_NAME=${params.SVC_IMAGESTREAM_NAME}",
-              '-p', "SVC_IMAGESTREAM_NAMESPACE=${params.SVC_IMAGESTREAM_NAMESPACE}",
-              '-p', "BUILD_URL=${BUILD_URL}",
-              '-p', "APP_JAR_NAME=${env.JAR_NAME}",
-            )
-            def build = c3i.buildAndWait(script: this, objs: processed)
-            echo 'Container build succeeds!'
-            def ocpBuild = build.object()
-            env.RESULTING_IMAGE_REF = ocpBuild.status.outputDockerImageReference
-            env.RESULTING_IMAGE_DIGEST = ocpBuild.status.output.to.imageDigest
-            def imagestream = openshift.selector('is', ['app': env.BUILDCONFIG_INSTANCE_ID]).object()
-            env.RESULTING_IMAGE_REPO = imagestream.status.dockerImageRepository
-            env.RESULTING_TAG = env.TEMP_TAG
+              def template = readYaml file: '../openshift/service-container.yaml'
+              def processed = openshift.process(template,
+                '-p', "NAME=${env.BUILDCONFIG_INSTANCE_ID}",
+                '-p', "SVC_IMAGE_TAG=${env.TEMP_TAG}",
+                '-p', "SVC_VERSION=${params.SVC_MAJOR_VERSION}",
+                '-p', "SVC_IMAGESTREAM_NAME=${params.SVC_IMAGESTREAM_NAME}",
+                '-p', "SVC_IMAGESTREAM_NAMESPACE=${params.SVC_IMAGESTREAM_NAMESPACE}",
+                '-p', "BUILD_URL=${BUILD_URL}",
+                '-p', "APP_JAR_NAME=${env.JAR_NAME}",
+              )
+              def build = c3i.buildAndWait(script: this, objs: processed)
+              echo 'Container build succeeds!'
+              def ocpBuild = build.object()
+              env.RESULTING_IMAGE_REF = ocpBuild.status.outputDockerImageReference
+              env.RESULTING_IMAGE_DIGEST = ocpBuild.status.output.to.imageDigest
+              def imagestream = openshift.selector('is', ['app': env.BUILDCONFIG_INSTANCE_ID]).object()
+              env.RESULTING_IMAGE_REPO = imagestream.status.dockerImageRepository
+              env.RESULTING_TAG = env.TEMP_TAG
+            }
           }
         }
       }
