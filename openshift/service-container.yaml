@@ -12,7 +12,7 @@ parameters:
 - name: SVC_IMAGESTREAM_NAME
   displayName: ImageStream name of the resulting image
   required: true
-  value: sidecar-jvm
+  value: "sidecar-jvm"
 - name: SVC_IMAGE_TAG
   displayName: Tag of resulting image
   required: true
@@ -20,6 +20,7 @@ parameters:
 - name: SVC_IMAGESTREAM_NAMESPACE
   displayName: Namespace of ImageStream for service container images
   required: false
+  value: ''
 - name: SVC_VERSION
   displayName: service app version
   required: false
@@ -40,7 +41,7 @@ objects:
     labels:
       app: "${NAME}"
 - kind: "BuildConfig"
-  apiVersion: "v1"
+  apiVersion: "build.openshift.io/v1"
   metadata:
     labels:
       app: "${NAME}"

@@ -50,7 +50,7 @@ objects:
     labels:
       app: "${NAME}"
 - kind: "BuildConfig"
-  apiVersion: "v1"
+  apiVersion: "build.openshift.io/v1"
   metadata:
     labels:
       app: "${NAME}"
