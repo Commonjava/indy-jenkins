@@ -103,12 +103,7 @@ pipeline {
               ) == 0
               sh """
               mkdir -p /home/jenkins/.m2
-              cp ../settings-release.xml /home/jenkins/.m2/settings.xml
-              sed -i 's/{{_PASSPHRASE}}/${PASSPHRASE}/g' /home/jenkins/.m2/settings.xml
-              sed -i 's/{{_USERNAME}}/${OSS_BOT_USERNAME}/g' /home/jenkins/.m2/settings.xml
-              sed -i 's/{{_PASSWORD}}/${OSS_BOT_PASSWORD}/g' /home/jenkins/.m2/settings.xml
-              sed -i s,git@github.com:Commonjava/${params.SVC_NAME}.git,https://`python3 -c 'print("${params.SVC_GIT_REPO}".split("//")[1])'`,g pom.xml
-              sed -i s,https://github.com/Commonjava/${params.SVC_NAME}.git,https://`python3 -c 'print("${params.SVC_GIT_REPO}".split("//")[1])'`,g pom.xml
+              cp ../settings.xml /home/jenkins/.m2/settings.xml
               """
               catchError(buildResult: 'SUCCESS', stageResult: 'SUCCESS') {
                     sh """
@@ -154,7 +149,7 @@ pipeline {
       steps {
         script {
           openshift.withCluster() {
-            def artifact="app/${params.SVC_NAME}-${SVC_MAJOR_VERSION}-SNAPSHOT.jar"
+            def artifact="app/${params.SVC_NAME}-${params.SVC_MAJOR_VERSION}-SNAPSHOT.jar"
             def artifact_file = sh(script: "ls $artifact", returnStdout: true)?.trim()
             env.JAR_NAME = "${BUILD_URL}artifact/$artifact_file"
 
