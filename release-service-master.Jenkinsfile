@@ -1,3 +1,5 @@
+library identifier: 'c3i@master', changelog: false,
+retriever: modernSCM([$class: 'GitSCMSource', remote: 'https://pagure.io/c3i-library.git'])
 pipeline {
   agent {
     kubernetes {
@@ -153,15 +155,13 @@ pipeline {
               def artifact="target/quarkus-app/app/*${params.SVC_MAJOR_VERSION}*.jar"
               def artifact_file = sh(script: "ls $artifact", returnStdout: true)?.trim()
               env.JAR_NAME = "${BUILD_URL}artifact/$artifact_file"
-
               def template = readYaml file: '../openshift/service-container.yaml'
               def processed = openshift.process(template,
                 '-p', "NAME=${env.BUILDCONFIG_INSTANCE_ID}",
                 '-p', "SVC_IMAGE_TAG=${env.TEMP_TAG}",
-                '-p', "SVC_VERSION=${params.SVC_MAJOR_VERSION}",
                 '-p', "SVC_IMAGESTREAM_NAME=${params.SVC_IMAGESTREAM_NAME}",
                 '-p', "SVC_IMAGESTREAM_NAMESPACE=${params.SVC_IMAGESTREAM_NAMESPACE}",
-                '-p', "BUILD_URL=${BUILD_URL}",
+                '-p', "BUILD_URL=${env.BUILD_URL}",
                 '-p', "APP_JAR_NAME=${env.JAR_NAME}",
               )
               def build = c3i.buildAndWait(script: this, objs: processed)

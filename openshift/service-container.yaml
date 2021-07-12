@@ -1,30 +1,22 @@
 apiVersion: v1
 kind: Template
 metadata:
-  name: service-container-template
+  name: indy-subservices-container-template
 labels:
-  template: "service-container-template"
+  template: "indy-subservices-container-template"
 parameters:
 - name: NAME
   displayName: Short unique identifier for the templated instances.
   required: true
-  value: "sidecar-container"
+  value: "services-container"
 - name: SVC_IMAGESTREAM_NAME
   displayName: ImageStream name of the resulting image
   required: true
-  value: "sidecar-jvm"
+  value: services-jvm
 - name: SVC_IMAGE_TAG
   displayName: Tag of resulting image
   required: true
   value: latest
-- name: SVC_IMAGESTREAM_NAMESPACE
-  displayName: Namespace of ImageStream for service container images
-  required: false
-  value: ''
-- name: SVC_VERSION
-  displayName: service app version
-  required: false
-  value: ''
 - name: BUILD_URL
   displayName: url of service jenkins build with artifact
   required: true
@@ -33,6 +25,10 @@ parameters:
   displayName: artifact jar file name
   required: true
   value: ''
+- name: SVC_IMAGESTREAM_NAMESPACE
+  displayName: Namespace of ImageStream for services container images
+  required: false
+  default: spmm-automation
 objects:
 - apiVersion: v1
   kind: ImageStream

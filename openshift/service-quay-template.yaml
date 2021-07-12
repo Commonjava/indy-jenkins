@@ -39,7 +39,7 @@ objects:
         name: quaydotio-nosbot
       to:
         kind: DockerImage
-        name: "quay.io/factory2/${NAME}:${QUAY_TAG}"
+        name: quay.io/factory2/${NAME}:${QUAY_TAG}
     runPolicy: Serial
     source:
       contextDir: service
