@@ -200,6 +200,25 @@ pipeline {
       }
     }
   }
+  stage('Tag image in ImageStream'){
+      when {
+        expression {
+          return "${params.QUAY_IMAGE_TAG}" && params.FORCE_PUBLISH_IMAGE == true
+        }
+      }
+      steps{
+        script{
+          openshift.withCluster() {
+            openshift.withProject("${params.SVC_IMAGESTREAM_NAMESPACE}") {
+              def sourceRef = "${params.SVC_IMAGESTREAM_NAME}:${env.RESULTING_TAG}"
+              def destRef = "${params.SVC_IMAGESTREAM_NAME}:${params.QUAY_IMAGE_TAG}"
+              echo "Tagging ${sourceRef} as ${destRef}"
+              openshift.tag("${sourceRef}", "${destRef}")
+            }
+          }
+        }
+      }
+    }
   post {
     success {
       script {
