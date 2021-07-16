@@ -176,6 +176,22 @@ pipeline {
           }
         }
       }
+      post {
+        failure {
+          echo "Failed to build container image ${env.TEMP_TAG}."
+        }
+        cleanup {
+          script {
+            openshift.withCluster() {
+              echo 'Tearing down...'
+              openshift.selector('bc', [
+                'app': env.BUILDCONFIG_INSTANCE_ID,
+                'template': 'indy-subservices-container-template',
+                ]).delete()
+            }
+          }
+        }
+      }
     }
     stage('tag and push image to quay'){
       when {
@@ -220,6 +236,19 @@ pipeline {
       }
     }
   post {
+    cleanup {
+      script{
+        if (env.RESULTING_TAG) {
+          echo "Removing tag ${env.RESULTING_TAG} from the ImageStream..."
+          openshift.withCluster() {
+            openshift.withProject("${params.SVC_IMAGESTREAM_NAMESPACE}") {
+              openshift.tag("${params.SVC_IMAGESTREAM_NAME}:${env.RESULTING_TAG}",
+                "-d")
+            }
+          }
+        }
+      }
+    }
     success {
       script {
         echo "SUCCEED"
