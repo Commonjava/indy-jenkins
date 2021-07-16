@@ -321,15 +321,6 @@ pipeline {
   post {
     cleanup {
       script{
-        if (params.INDY_GIT_BRANCH == 'release' || params.INDY_PREPARE_RELEASE == true){
-          try{
-            sh """
-            curl -X DELETE "http://indy-infra.spmm-automation.svc.cluster.local/api/admin/stores/maven/hosted/${params.INDY_MAJOR_VERSION}-jenkins-${env.BUILD_NUMBER}" -H "accept: application/json"
-            """
-          }catch(e){
-            echo "Error teardown hosted repo"
-          }
-        }
         if (env.RESULTING_TAG) {
           echo "Removing tag ${env.RESULTING_TAG} from the ImageStream..."
           openshift.withCluster() {
@@ -337,6 +328,15 @@ pipeline {
               openshift.tag("${params.INDY_IMAGESTREAM_NAME}:${env.RESULTING_TAG}",
                 "-d")
             }
+          }
+        }
+        if (params.INDY_GIT_BRANCH == 'release' || params.INDY_PREPARE_RELEASE == true){
+          try{
+            sh """
+            curl -X DELETE "http://indy-infra.spmm-automation.svc.cluster.local/api/admin/stores/maven/hosted/${params.INDY_MAJOR_VERSION}-jenkins-${env.BUILD_NUMBER}" -H "accept: application/json"
+            """
+          }catch(e){
+            echo "Error teardown hosted repo"
           }
         }
       }
