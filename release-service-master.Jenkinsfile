@@ -215,8 +215,7 @@ pipeline {
         }
       }
     }
-  }
-  stage('Tag image in ImageStream'){
+    stage('Tag image in ImageStream'){
       when {
         expression {
           return "${params.QUAY_IMAGE_TAG}" && params.FORCE_PUBLISH_IMAGE == true
@@ -235,6 +234,7 @@ pipeline {
         }
       }
     }
+  }
   post {
     cleanup {
       script{
