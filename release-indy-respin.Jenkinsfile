@@ -75,6 +75,44 @@ pipeline {
     DATA_TARBALL_URL = "${env.GITHUB_URL}/releases/download/indy-parent-${params.INDY_VERSION}/indy-launcher-${params.INDY_VERSION}-data.tar.gz"
   }
   stages {
+    stage('git checkout') {
+      when{
+        expression{
+          return params.REDO_RELEASE_PERFORM == true
+        }
+      }
+      steps{
+        script{
+          checkout([$class      : 'GitSCM', branches: [[name: params.INDY_GIT_BRANCH]], doGenerateSubmoduleConfigurations: false,
+                    extensions  : [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'indy']], submoduleCfg: [],
+                    userRemoteConfigs: [[url: env.GITHUB_URL]]])
+
+          echo "Prepare the release of ${env.GITHUB_URL} branch: ${params.INDY_GIT_BRANCH}"
+
+          sh """
+          cd indy
+          git checkout ${params.INDY_GIT_BRANCH}
+          gpg --allow-secret-key-import --import /home/jenkins/gnupg_keys/private_key.txt
+          """
+        }
+      }
+    }
+    stage('Release Respin') {
+      when{
+        expression{
+          return params.REDO_RELEASE_PERFORM == true
+        }
+      }
+      steps {
+        script {
+          dir('indy'){
+            sh """
+            mvn --batch-mode release:perform
+            """
+          }
+        }
+      }
+    }
     stage('Build Quay Image') {
       when{
         expression{
