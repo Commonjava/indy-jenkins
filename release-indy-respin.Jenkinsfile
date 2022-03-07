@@ -18,7 +18,7 @@ pipeline {
       spec:
         containers:
         - name: jnlp
-          image: registry.redhat.io/openshift4/ose-jenkins-agent-maven:v4.5.0
+          image: quay.io/kaine/indy-stress-tester:latest
           imagePullPolicy: Always
           tty: true
           env:
@@ -49,6 +49,8 @@ pipeline {
           volumeMounts:
           - mountPath: /home/jenkins/sonatype
             name: volume-0
+          - mountPath: /home/jenkins/gnupg_keys
+            name: volume-1
           - mountPath: /mnt/ocp
             name: volume-2
           workingDir: /home/jenkins
@@ -57,6 +59,10 @@ pipeline {
           secret:
             defaultMode: 420
             secretName: sonatype-secrets
+        - name: volume-1
+          secret:
+            defaultMode: 420
+            secretName: gnupg
         - name: volume-2
           configMap:
             defaultMode: 420
@@ -75,6 +81,61 @@ pipeline {
     DATA_TARBALL_URL = "${env.GITHUB_URL}/releases/download/indy-parent-${params.INDY_VERSION}/indy-launcher-${params.INDY_VERSION}-data.tar.gz"
   }
   stages {
+    stage('git checkout') {
+      when{
+        expression{
+          return params.REDO_RELEASE_PERFORM == true
+        }
+      }
+      steps{
+        script{
+          checkout([$class      : 'GitSCM', doGenerateSubmoduleConfigurations: false,
+                    extensions  : [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'indy']], submoduleCfg: [],
+                    userRemoteConfigs: [[url: env.GITHUB_URL]]])
+
+          echo "Prepare the release of ${env.GITHUB_URL} tag: indy-parent-${params.INDY_VERSION}"
+
+          sh """
+          cd indy
+          git checkout indy-parent-${params.INDY_VERSION}
+          gpg --allow-secret-key-import --import /home/jenkins/gnupg_keys/private_key.txt
+          """
+        }
+      }
+    }
+    stage('Release Respin') {
+      when{
+        expression{
+          return params.REDO_RELEASE_PERFORM == true
+        }
+      }
+      steps {
+        script {
+          withCredentials([
+            usernamePassword(credentialsId:'GitHub_Bot', passwordVariable:'BOT_PASSWORD', usernameVariable:'BOT_USERNAME'),
+            usernamePassword(credentialsId:'OSS-Nexus-Bot', passwordVariable:'OSS_BOT_PASSWORD', usernameVariable:'OSS_BOT_USERNAME'),
+            string(credentialsId: 'gnupg_passphrase', variable: 'PASSPHRASE')
+          ]){
+            dir('indy'){
+              sh """
+              mkdir -p /home/jenkins/.m2
+              mkdir -p ./target/checkout
+              cp toolchains.xml /home/jenkins/.m2/toolchains.xml
+              cp ../settings-release.xml /home/jenkins/.m2/settings.xml
+              sed -i 's/{{_USERNAME}}/${OSS_BOT_USERNAME}/g' /home/jenkins/.m2/settings.xml
+              sed -i 's/{{_PASSWORD}}/${OSS_BOT_PASSWORD}/g' /home/jenkins/.m2/settings.xml
+              sed -i 's/{{_PASSPHRASE}}/'${PASSPHRASE}'/g' /home/jenkins/.m2/settings.xml
+              sed -i s,git@github.com:Commonjava/indy.git,https://`python3 -c 'print("${env.GITHUB_URL}".split("//")[1])'`,g pom.xml
+              sed -i s,https://github.com/Commonjava/indy.git,https://`python3 -c 'print("${env.GITHUB_URL}".split("//")[1])'`,g pom.xml
+              echo 'scm.url=scm:git:${env.GITHUB_URL}' > ./release.properties
+              echo 'scm.tag=indy-parent-${params.INDY_VERSION}' >> ./release.properties
+              mvn --batch-mode release:perform
+              """
+            }
+          }
+        }
+      }
+    }
     stage('Build Quay Image') {
       when{
         expression{
