@@ -5,13 +5,6 @@
           xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
 
   <localRepository>/tmp/local-repo</localRepository>
-  <mirrors>
-    <mirror>
-      <id>local</id>
-      <mirrorOf>*</mirrorOf>
-      <url>http://gateway.spmm-automation.svc.cluster.local/api/content/maven/group/public</url>
-    </mirror>
-  </mirrors>
   <profiles>
     <profile>
       <id>internal-resolve</id>
