@@ -9,7 +9,7 @@
     <mirror>
       <id>local</id>
       <mirrorOf>*</mirrorOf>
-      <url>http://gateway.spmm-automation.svc.cluster.local/api/content/maven/group/local</url>
+      <url>http://gateway.spmm-automation.svc.cluster.local/api/content/maven/group/public</url>
     </mirror>
   </mirrors>
   <profiles>
@@ -25,7 +25,7 @@
           <snapshots>
             <enabled>true</enabled>
           </snapshots>
-          <url>http://gateway.spmm-automation.svc.cluster.local/api/content/maven/group/local</url>
+          <url>http://gateway.spmm-automation.svc.cluster.local/api/content/maven/group/public</url>
         </repository>
       </repositories>
 
@@ -38,7 +38,7 @@
           <snapshots>
             <enabled>true</enabled>
           </snapshots>
-          <url>http://gateway.spmm-automation.svc.cluster.local/api/content/maven/group/local</url>
+          <url>http://gateway.spmm-automation.svc.cluster.local/api/content/maven/group/public</url>
         </pluginRepository>
       </pluginRepositories>
     </profile>
