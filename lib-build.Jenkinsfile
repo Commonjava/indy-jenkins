@@ -21,6 +21,8 @@ pipeline {
           env:
           - name: JAVA_HOME
             value: /usr/lib/jvm/java-11-openjdk
+          - name: MAVEN_HOME
+            value: /opt/apache-maven-3.6.3
           - name: JAVA_TOOL_OPTIONS
             value: '-XX:+UnlockExperimentalVMOptions -Dsun.zip.disableMemoryMapping=true -Xms1024m -Xmx4g'
           - name: MAVEN_OPTS
@@ -79,14 +81,14 @@ pipeline {
     stage('Build'){
       steps{
         dir(params.LIB_NAME){
-          sh "mvn -B -V clean verify"
+          sh "$MAVEN_HOME/bin/mvn -B -V clean verify"
         }
       }
     }
     stage('Functional test'){
       steps {
         dir(params.LIB_NAME){
-          sh 'mvn -B -V verify -Prun-its -Pci'
+          sh "$MAVEN_HOME/bin/mvn -B -V verify -Prun-its -Pci"
         }
       }
     }
@@ -145,3 +147,4 @@ def sendBuildStatusEmail(String status) {
   }
   emailext to: recipient, subject: subject, body: body
 }
+
