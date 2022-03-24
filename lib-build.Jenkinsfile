@@ -107,7 +107,7 @@ pipeline {
       steps {
         dir(params.LIB_NAME){
           echo "Deploy"
-          sh 'mvn help:effective-settings -B -V -DskipTests=true deploy -e'
+          sh "$MAVEN_HOME/bin/mvn help:effective-settings -B -V -DskipTests=true deploy -e"
         }
       }
     }
