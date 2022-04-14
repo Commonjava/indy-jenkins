@@ -15,7 +15,7 @@
     <profile>
       <id>gpg</id>
       <properties>
-        <gpg.keyname>1CC733DF</gpg.keyname>
+        <gpg.keyname>FE5642EC</gpg.keyname>
         <gpg.passphrase>{{_PASSPHRASE}}</gpg.passphrase>
       </properties>
     </profile>
