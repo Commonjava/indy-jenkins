@@ -105,7 +105,9 @@ pipeline {
               sed -i 's/{{_USERNAME}}/${OSS_BOT_USERNAME}/g' /home/jenkins/.m2/settings.xml
               sed -i 's/{{_PASSWORD}}/${OSS_BOT_PASSWORD}/g' /home/jenkins/.m2/settings.xml
               sed -i s,git@github.com:Commonjava/${params.LIB_NAME}.git,https://`python3 -c 'print("${params.LIB_GIT_REPO}".split("//")[1])'`,g pom.xml
+              sed -i s,git@github.com:release-engineering/${params.LIB_NAME}.git,https://`python3 -c 'print("${params.LIB_GIT_REPO}".split("//")[1])'`,g pom.xml
               sed -i s,https://github.com/Commonjava/${params.LIB_NAME}.git,https://`python3 -c 'print("${params.LIB_GIT_REPO}".split("//")[1])'`,g pom.xml
+              sed -i s,https://github.com/release-engineering/${params.LIB_NAME}.git,https://`python3 -c 'print("${params.LIB_GIT_REPO}".split("//")[1])'`,g pom.xml
               """
               catchError(buildResult: 'SUCCESS', stageResult: 'SUCCESS') {
                     sh """
