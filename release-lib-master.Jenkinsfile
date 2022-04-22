@@ -123,6 +123,11 @@ pipeline {
       }
     }
     stage('Release Prepare'){
+      when{
+        expression {
+          return params.SKIP_PREPARE == false
+        }
+      }
       steps{
         script{
           withCredentials([
