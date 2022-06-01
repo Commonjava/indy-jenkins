@@ -123,6 +123,11 @@ pipeline {
       }
     }
     stage('Release Prepare'){
+      when{
+        expression {
+          return params.SKIP_PREPARE == false
+        }
+      }
       steps{
         script{
           withCredentials([
@@ -147,6 +152,14 @@ pipeline {
       steps{
         script{
           dir(params.LIB_NAME){
+            if (params.SKIP_PREPARE == true){
+              sh """
+              cat > release.properties << EOF
+              scm.url=scm:git:https://`python3 -c 'print("${params.LIB_GIT_REPO}".split("//")[1])'`
+              scm.tag=${params.LIB_NAME}-${params.LIB_MAJOR_VERSION}
+              EOF
+              """
+            }
             sh """
             mvn --batch-mode release:perform
             """
