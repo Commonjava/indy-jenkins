@@ -114,7 +114,7 @@ pipeline {
       steps{
         script{
           withCredentials([
-            usernamePassword(credentialsId:'GitHubAccount', passwordVariable:'BOT_PASSWORD', usernameVariable:'BOT_USERNAME'),
+            usernamePassword(credentialsId:'GitHub_Bot', passwordVariable:'BOT_PASSWORD', usernameVariable:'BOT_USERNAME'),
             usernamePassword(credentialsId:'OSS-Nexus-Bot', passwordVariable:'OSS_BOT_PASSWORD', usernameVariable:'OSS_BOT_USERNAME'),
             string(credentialsId: 'gnupg_passphrase', variable: 'PASSPHRASE')
           ]) {
@@ -152,7 +152,7 @@ pipeline {
       steps{
         script{
           withCredentials([
-            usernamePassword(credentialsId:'GitHubAccount', passwordVariable:'BOT_PASSWORD', usernameVariable:'BOT_USERNAME')
+            usernamePassword(credentialsId:'GitHub_Bot', passwordVariable:'BOT_PASSWORD', usernameVariable:'BOT_USERNAME')
           ]){
             dir('indy'){
               env.INDY_NEXT_VERSION = params.INDY_DEV_VERSION ? params.INDY_DEV_VERSION : sh (
@@ -183,7 +183,7 @@ pipeline {
     stage('clean up and prepare folder again'){
       steps{
         script{withCredentials([
-            usernamePassword(credentialsId:'GitHubAccount', passwordVariable:'BOT_PASSWORD', usernameVariable:'BOT_USERNAME'),
+            usernamePassword(credentialsId:'GitHub_Bot', passwordVariable:'BOT_PASSWORD', usernameVariable:'BOT_USERNAME'),
             usernamePassword(credentialsId:'OSS-Nexus-Bot', passwordVariable:'OSS_BOT_PASSWORD', usernameVariable:'OSS_BOT_USERNAME'),
             string(credentialsId: 'gnupg_passphrase', variable: 'PASSPHRASE')
           ]) {
