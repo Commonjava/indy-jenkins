@@ -112,7 +112,7 @@ pipeline {
       steps {
         script {
           withCredentials([
-            usernamePassword(credentialsId:'GitHubAccount', passwordVariable:'BOT_PASSWORD', usernameVariable:'BOT_USERNAME'),
+            usernamePassword(credentialsId:'GitHub_Bot', passwordVariable:'BOT_PASSWORD', usernameVariable:'BOT_USERNAME'),
             usernamePassword(credentialsId:'OSS-Nexus-Bot', passwordVariable:'OSS_BOT_PASSWORD', usernameVariable:'OSS_BOT_USERNAME'),
             string(credentialsId: 'gnupg_passphrase', variable: 'PASSPHRASE')
           ]){
